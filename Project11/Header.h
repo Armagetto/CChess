@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
-
+#include <Windows.h>
 
 /*define ENUM type */
 enum PieceType { empty, pawn = 1, bishop, knight, rook=5, queen = 9, king};
@@ -26,9 +26,9 @@ typedef struct
 
 
 /*functions*/
-int BuildChessBoard(board* b)
+void BuildChessBoard(board* b)
 {
-	//ini all pieces to empty
+	//sets all pieces to empty
 	for (int counter1 = 0; counter1 < BOARD_SIZE; counter1++) {
 		for (int counter2 = 0; counter2 < BOARD_SIZE; counter2++) {
 			b->piecesArray[counter1][counter2].piceType = empty;
@@ -36,7 +36,7 @@ int BuildChessBoard(board* b)
 		}
 	}
 
-	//black
+	//sets black
 	b->piecesArray[A][7].piceType = rook;
 	b->piecesArray[H][7].piceType = rook;
 
@@ -55,7 +55,7 @@ int BuildChessBoard(board* b)
 		b->piecesArray[i][7].playerType = black;
 	}
 
-	//white
+	//sets white
 	b->piecesArray[A][0].piceType = rook;
 	b->piecesArray[H][0].piceType = rook;
 					
@@ -73,49 +73,63 @@ int BuildChessBoard(board* b)
 		b->piecesArray[i][1].playerType = white;
 		b->piecesArray[i][0].playerType = white;
 	}
-	
-
-	return 1;
 }
 
 
 void printBoard(board* b)
 {
+
 	for (int x = 0; x < BOARD_SIZE;x++) {
 		for (int y = 0; y < BOARD_SIZE; y++) {
 			switch (b->piecesArray[y][x].piceType)
 			{
 			case pawn:
-				if (b->piecesArray[y][x].playerType)
-					printf("P");
+				if (!b->piecesArray[y][x].playerType)
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 				else
-					printf("P");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+					printf("|P|");
+				break;
 			case rook:
 				if (b->piecesArray[y][x].playerType)
-					printf("-");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
 				else
-					printf("+");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+				printf("|R|");
+				break;
 			case knight:
 				if (b->piecesArray[y][x].playerType)
-					printf("-");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
 				else
-					printf("+");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+				printf("|N|");
+				break;
 			case bishop:
 				if (b->piecesArray[y][x].playerType)
-					printf("-");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
 				else
-					printf("+");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+				printf("|B|");
+				break;
 			case king:
 				if (b->piecesArray[y][x].playerType)
-					printf("-");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
 				else
-					printf("+");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+				printf("|K|");
+				break;
 			case queen:
 				if (b->piecesArray[y][x].playerType)
-					printf("-");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
 				else
-					printf("+");
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+				printf("|Q|");
+				break;
+			case empty:
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+				printf("|_|");
 			default:
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
 				break;
 			}
 
@@ -131,10 +145,3 @@ char* movePiece(piece piece,char **location)
 
 }
 
-
-/*
-//open all pieces (including the empty once)
-	b->piecesArray = (board*)malloc(sizeof(piece) * BOARD_SIZE * BOARD_SIZE);
-	if (b->piecesArray)
-		return 0; //faild to open board
-*/
