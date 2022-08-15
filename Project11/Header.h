@@ -29,9 +29,27 @@ typedef struct
 /*functions*/
 
 //colors (windows)
+void blackOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); };
+void BlackOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8); };
+			
+//void whiteOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240); };
+//void BlackOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 248); };
+
 void colorChange_white() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); };
 void colorChange_gray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8); };
 void colorChange_whiteBlue() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 23); };
+void colorChange_whiteOrBlack(int color)
+{
+	if (color == white)
+	{
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	}
+	else
+	{
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240);
+	}
+	
+};
 
 
 //main functions
@@ -88,22 +106,22 @@ void BuildChessBoard(board* b)
 	}
 }
 
-
 void printBoard(board* b)
 {
 	//vars
 	char lineAlphabet[9] = { 'A','B','C','D','E','F','G','H',' '};
 	char lineNumbers[8] = { '8','7','6','5','4','3','2','1'};
-	int blockColorDecider = white;
+	int blockColorDecider = black;
 
 	//print
 	for (int x = 0; x < BOARD_SIZE; x++)
 	{
 		for (int y = 0; y < BOARD_SIZE; y++)
 		{
-			//print first '|' in the correct color
 
-			//printf("");
+			//print first '|' in the correct color
+			colorChange_whiteOrBlack(blockColorDecider);
+			printf("|");
 
 			switch (b->piecesArray[y][x].piceType)
 			{
@@ -112,42 +130,42 @@ void printBoard(board* b)
 					colorChange_gray();
 				else
 					colorChange_white();
-					printf("|P|");
+					printf("P");
 				break;
 			case rook:
 				if (b->piecesArray[y][x].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
-				printf("|R|");
+				printf("R");
 				break;
 			case knight:
 				if (b->piecesArray[y][x].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
-				printf("|N|");
+				printf("N");
 				break;
 			case bishop:
 				if (b->piecesArray[y][x].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
-				printf("|B|");
+				printf("B");
 				break;
 			case king:
 				if (b->piecesArray[y][x].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
-				printf("|K|");
+				printf("K");
 				break;
 			case queen:
 				if (b->piecesArray[y][x].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
-				printf("|Q|");
+				printf("Q");
 				break;
 			case empty:
 				colorChange_whiteBlue();
@@ -160,16 +178,23 @@ void printBoard(board* b)
 				}
 				else {
 					colorChange_white();
-					printf("|_|");
+					printf("_");
 				}
 					
 			default:
 				colorChange_gray();
 				break;
 			}
+			//on last print
 			if (y == BOARD_SIZE - 1) {
 				printf("\n");
 			}
+			
+
+
+			colorChange_whiteOrBlack(blockColorDecider);
+			printf("|");
+			blockColorDecider = !blockColorDecider;
 		}
 	}
 }
