@@ -29,11 +29,12 @@ typedef struct
 /*functions*/
 
 //colors (windows)
-void blackOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); };
-void BlackOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8); };
-			
+
+void blackOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240); };
+void blackOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 112); };
+
 //void whiteOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240); };
-//void BlackOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 248); };
+//void whiteOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 248); };
 
 void colorChange_white() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); };
 void colorChange_gray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8); };
@@ -114,54 +115,51 @@ void printBoard(board* b)
 	int blockColorDecider = black;
 
 	//print
-	for (int x = 0; x < BOARD_SIZE; x++)
+	for (int y = 0; y < BOARD_SIZE; y++)
 	{
-		for (int y = 0; y < BOARD_SIZE; y++)
+		for (int x = 0; x < BOARD_SIZE; x++)
 		{
 
-			//print first '|' in the correct color
-			colorChange_whiteOrBlack(blockColorDecider);
-			printf("|");
-
-			switch (b->piecesArray[y][x].piceType)
+			
+			switch (b->piecesArray[x][y].piceType)
 			{
 			case pawn:
-				if (b->piecesArray[y][x].playerType)
-					colorChange_gray();
+				if (b->piecesArray[x][y].playerType == black && y % 2 == 0 )
+					blackOnWhite();
 				else
-					colorChange_white();
+					blackOnGray();
 					printf("P");
 				break;
 			case rook:
-				if (b->piecesArray[y][x].playerType)
+				if (b->piecesArray[x][y].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
 				printf("R");
 				break;
 			case knight:
-				if (b->piecesArray[y][x].playerType)
+				if (b->piecesArray[x][y].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
 				printf("N");
 				break;
 			case bishop:
-				if (b->piecesArray[y][x].playerType)
+				if (b->piecesArray[x][y].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
 				printf("B");
 				break;
 			case king:
-				if (b->piecesArray[y][x].playerType)
+				if (b->piecesArray[x][y].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
 				printf("K");
 				break;
 			case queen:
-				if (b->piecesArray[y][x].playerType)
+				if (b->piecesArray[x][y].playerType)
 					colorChange_gray();
 				else
 					colorChange_white();
@@ -169,12 +167,12 @@ void printBoard(board* b)
 				break;
 			case empty:
 				colorChange_whiteBlue();
-				if (x == BOARD_SIZE-1) 
+				if (y == BOARD_SIZE-1) 
 				{
-					printf(" %c ",lineAlphabet[y]);
+					printf(" %c ",lineAlphabet[x]);
 				}
-				else if (y == BOARD_SIZE - 1) {
-					printf(" %c ", lineNumbers[x]);
+				else if (x == BOARD_SIZE - 1) {
+					printf(" %c ", lineNumbers[y]);
 				}
 				else {
 					colorChange_white();
@@ -186,15 +184,13 @@ void printBoard(board* b)
 				break;
 			}
 			//on last print
-			if (y == BOARD_SIZE - 1) {
+			if (x == BOARD_SIZE - 1) {
 				printf("\n");
 			}
-			
+			else if (y == BOARD_SIZE - 1) {
 
+			}
 
-			colorChange_whiteOrBlack(blockColorDecider);
-			printf("|");
-			blockColorDecider = !blockColorDecider;
 		}
 	}
 }
