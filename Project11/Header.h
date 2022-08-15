@@ -1,10 +1,14 @@
 ﻿#pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #define BOARD_SIZE 9 //8X8 is for chess + 1 for numbers and latters
+#define COLOR_BOLD  "\e[1m"
+#define COLOR_OFF   "\e[m"
+
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
 #include <Windows.h>
+
 
 /*define ENUM type */
 enum PieceType { empty, pawn = 1, bishop, knight, rook=5, queen = 9, king};
@@ -17,52 +21,49 @@ typedef struct
 {
 	int piceType; //king etc.
 	int playerType; //black or white
-	//char location[BOARD_SIZE][BOARD_SIZE];
+
 }piece;
 
 typedef struct
 {
 	piece piecesArray[BOARD_SIZE][BOARD_SIZE];
+	int boardBace[BOARD_SIZE][BOARD_SIZE];
 }board;
 
 
 /*functions*/
 
-//colors (windows)
+//color logic (windows)
 
-void blackOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240); };
-void blackOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 112); };
-
-//void whiteOnGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240); };
-//void whiteOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 248); };
+void blackOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240); }; //black on white
+void blackOnLightGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 112); }; //black on black
+void grayOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 248); }; //white on white
+void grayOnLightGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 120); }; //white on black
 
 void colorChange_white() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); };
 void colorChange_gray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8); };
 void colorChange_whiteBlue() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 23); };
-void colorChange_whiteOrBlack(int color)
-{
-	if (color == white)
-	{
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	}
-	else
-	{
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240);
-	}
-	
-};
-
 
 //main functions
 void BuildChessBoard(board* b)
 {
+	//vars 
+	int counterForPrintingBlackWhite = white;
+
 	//sets all pieces to empty
 	for (int counter1 = 0; counter1 < BOARD_SIZE; counter1++)
 	{
 		for (int counter2 = 0; counter2 < BOARD_SIZE; counter2++)
 		{
+			//ini slots
 			b->piecesArray[counter1][counter2].piceType = empty;
 			b->piecesArray[counter1][counter2].playerType = nor;
+			//ini bace (insert one white one black)
+			if (counterForPrintingBlackWhite == white)
+				b->boardBace[counter1][counter2] = white;
+			else
+				b->boardBace[counter1][counter2] = black;
+			counterForPrintingBlackWhite = !counterForPrintingBlackWhite; 
 		}
 	}
 
@@ -107,12 +108,24 @@ void BuildChessBoard(board* b)
 	}
 }
 
+void colorResolver(board* b, int x, int y)
+{
+	if (b->piecesArray[x][y].playerType == black && b->boardBace[x][y] == white)
+		grayOnWhite();
+	if (b->piecesArray[x][y].playerType == black && b->boardBace[x][y] == black)
+		grayOnLightGray();
+	if (b->piecesArray[x][y].playerType == white && b->boardBace[x][y] == white)
+		blackOnWhite();
+	if (b->piecesArray[x][y].playerType == white && b->boardBace[x][y] == black)
+		blackOnLightGray();
+}
+
 void printBoard(board* b)
 {
 	//vars
 	char lineAlphabet[9] = { 'A','B','C','D','E','F','G','H',' '};
 	char lineNumbers[8] = { '8','7','6','5','4','3','2','1'};
-	int blockColorDecider = black;
+
 
 	//print
 	for (int y = 0; y < BOARD_SIZE; y++)
@@ -124,46 +137,29 @@ void printBoard(board* b)
 			switch (b->piecesArray[x][y].piceType)
 			{
 			case pawn:
-				if (b->piecesArray[x][y].playerType == black && y % 2 == 0 )
-					blackOnWhite();
-				else
-					blackOnGray();
-					printf("P");
+					colorResolver(b,x,y);
+					printf("|P|");
+		
 				break;
 			case rook:
-				if (b->piecesArray[x][y].playerType)
-					colorChange_gray();
-				else
-					colorChange_white();
-				printf("R");
+				colorResolver(b, x, y);
+				printf("|R|");
 				break;
 			case knight:
-				if (b->piecesArray[x][y].playerType)
-					colorChange_gray();
-				else
-					colorChange_white();
-				printf("N");
+				colorResolver(b, x, y);
+				printf("|N|");
 				break;
 			case bishop:
-				if (b->piecesArray[x][y].playerType)
-					colorChange_gray();
-				else
-					colorChange_white();
-				printf("B");
+				colorResolver(b, x, y);
+				printf("|B|");
 				break;
 			case king:
-				if (b->piecesArray[x][y].playerType)
-					colorChange_gray();
-				else
-					colorChange_white();
-				printf("K");
+				colorResolver(b, x, y);
+				printf("|K|");
 				break;
 			case queen:
-				if (b->piecesArray[x][y].playerType)
-					colorChange_gray();
-				else
-					colorChange_white();
-				printf("Q");
+				colorResolver(b, x, y);
+				printf("|Q|");
 				break;
 			case empty:
 				colorChange_whiteBlue();
@@ -176,7 +172,7 @@ void printBoard(board* b)
 				}
 				else {
 					colorChange_white();
-					printf("_");
+					printf("|_|");
 				}
 					
 			default:
