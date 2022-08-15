@@ -2,9 +2,11 @@
 
 
 void main() {
+	board b;
+	BuildChessBoard(&b);
+	
+	//printf("%d,", b.piecesArray[A][7].piceType);
 
-	int a=0;
-	if (scanf("%d", &a) == NULL)
-		return 0;
-	printf("%d",a);
+	printBoard(&b);
+	
 }
