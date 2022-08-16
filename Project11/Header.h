@@ -143,28 +143,28 @@ void printBoard(board* b)
 			{
 			case pawn:
 				colorResolver(b,x,y);
-				printf("|P|");
+				printf("P ");
 		
 				break;
 			case rook:
 				colorResolver(b, x, y);
-				printf("|R|");
+				printf("R ");
 				break;
 			case knight:
 				colorResolver(b, x, y);
-				printf("|N|");
+				printf("N ");
 				break;
 			case bishop:
 				colorResolver(b, x, y);
-				printf("|B|");
+				printf("B ");
 				break;
 			case king:
 				colorResolver(b, x, y);
-				printf("|K|");
+				printf("K ");
 				break;
 			case queen:
 				colorResolver(b, x, y);
-				printf("|Q|");
+				printf("Q ");
 				break;
 			case empty:
 				colorResolver(b, x, y);
@@ -172,15 +172,15 @@ void printBoard(board* b)
 				if (y == BOARD_SIZE-1) 
 				{
 					colorChangeWhiteBlue();
-					printf(" %c ",lineAlphabet[x]);
+					printf("%c ",lineAlphabet[x]);
 				}
 				else if (x == BOARD_SIZE - 1) {
 					colorChangeWhiteBlue();
-					printf(" %c ", lineNumbers[y]);
+					printf("%c ", lineNumbers[y]);
 				}
 				else {
 					colorResolver(b, x, y);
-					printf("|_|");
+					printf("  ");
 				}
 					
 			default:
@@ -233,6 +233,12 @@ char* movePiece(board* b)
 	int j;
 	int x = 0;
 	int y = 0;
+
+	//player turn message
+	if (b->playerTurn)
+	printf("Whites turn: ");
+	else
+	printf("blacks turn: ");
 
 	//get the piece to move
 	if (scanf("%s", PieceAndLocation) == NULL)
