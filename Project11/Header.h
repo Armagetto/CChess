@@ -8,21 +8,6 @@
 #include <Windows.h>
 
 
-/*
-//global
-int metrix[BOARD_SIZE-1][BOARD_SIZE-1] =
-{
-	0,1,0,1,0,1,0,1,
-	1,0,1,0,1,0,1,0,
-	0,1,0,1,0,1,0,1,
-	1,0,1,0,1,0,1,0,
-	0,1,0,1,0,1,0,1,
-	1,0,1,0,1,0,1,0,
-	0,1,0,1,0,1,0,1,
-	1,0,1,0,1,0,1,0
-};
-*/
-
 /*define ENUM type */
 enum PieceType { empty, pawn = 1, bishop, knight, rook=5, queen = 9, king};
 enum playerType { black, white, nor};
@@ -46,18 +31,13 @@ typedef struct
 
 
 /*functions*/
-
-
 //color logic (windows)
-
 void blackOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240); }; //black on white
 void blackOnLightGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 112); }; //black on black
 void grayOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 248); }; //white on white
 void grayOnLightGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 120); }; //white on black
-
-void colorChange_white() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); };
-void colorChange_gray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8); };
-void colorChange_whiteBlue() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 23); };
+void colorChangeWhiteBlue() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 23); }; //white on blue
+void colorChangeDefault() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); }; //default
 
 //main game functions
 void BuildChessBoard(board* b)
@@ -123,6 +103,7 @@ void BuildChessBoard(board* b)
 	}
 }
 
+//this function takes care of color printing correctly
 void colorResolver(board* b, int x, int y)
 {
 	if (b->piecesArray[x][y].playerType == black && b->boardBace[x][y] == white)
@@ -154,8 +135,6 @@ void printBoard(board* b)
 	{
 		for (int x = 0; x < BOARD_SIZE; x++)
 		{
-
-			
 			switch (b->piecesArray[x][y].piceType)
 			{
 			case pawn:
@@ -188,11 +167,11 @@ void printBoard(board* b)
 				
 				if (y == BOARD_SIZE-1) 
 				{
-					colorChange_whiteBlue();
+					colorChangeWhiteBlue();
 					printf(" %c ",lineAlphabet[x]);
 				}
 				else if (x == BOARD_SIZE - 1) {
-					colorChange_whiteBlue();
+					colorChangeWhiteBlue();
 					printf(" %c ", lineNumbers[y]);
 				}
 				else {
@@ -201,7 +180,7 @@ void printBoard(board* b)
 				}
 					
 			default:
-				colorChange_gray();
+				colorChangeDefault();
 				break;
 			}
 
@@ -209,8 +188,6 @@ void printBoard(board* b)
 			if (x == BOARD_SIZE - 1) {
 				printf("\n");
 			}
-			
-			
 		}
 
 	}
