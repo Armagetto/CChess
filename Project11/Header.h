@@ -83,8 +83,8 @@ void BuildChessBoard(board* b)
 	for (int i = 0; i < BOARD_SIZE-1;i++)
 	{
 		b->piecesArray[i][6].piceType = pawn;
-		b->piecesArray[i][6].playerType = black;
-		b->piecesArray[i][7].playerType = black;
+		b->piecesArray[i][6].playerType = white;
+		b->piecesArray[i][7].playerType = white;
 	}
 
 	//sets white
@@ -103,21 +103,21 @@ void BuildChessBoard(board* b)
 	for (int i = 0; i < BOARD_SIZE-1; i++)
 	{
 		b->piecesArray[i][1].piceType = pawn;
-		b->piecesArray[i][1].playerType = white;
-		b->piecesArray[i][0].playerType = white;
+		b->piecesArray[i][1].playerType = black;
+		b->piecesArray[i][0].playerType = black;
 	}
 }
 
 void colorResolver(board* b, int x, int y)
 {
 	if (b->piecesArray[x][y].playerType == black && b->boardBace[x][y] == white)
-		grayOnWhite();
-	if (b->piecesArray[x][y].playerType == black && b->boardBace[x][y] == black)
-		grayOnLightGray();
-	if (b->piecesArray[x][y].playerType == white && b->boardBace[x][y] == white)
 		blackOnWhite();
-	if (b->piecesArray[x][y].playerType == white && b->boardBace[x][y] == black)
+	if (b->piecesArray[x][y].playerType == black && b->boardBace[x][y] == black)
 		blackOnLightGray();
+	if (b->piecesArray[x][y].playerType == white && b->boardBace[x][y] == white)
+		grayOnWhite();
+	if (b->piecesArray[x][y].playerType == white && b->boardBace[x][y] == black)
+		grayOnLightGray();
 }
 
 void printBoard(board* b)
@@ -208,7 +208,7 @@ char* movePiece(board* b)
 	for (i=0; i < BOARD_SIZE-1 ; i++) {
 		for (j=0; j < BOARD_SIZE-1 ; j++) {
 			//if found
-			if (b->piecesArray[i][j].piceType == pawn && b->piecesArray[i][j].playerType == white && b->playerTurn == white) {
+			if (b->piecesArray[i][j].piceType == pawn && b->piecesArray[i][j].playerType == white) {
 				//save and brake
 				x = i;
 				y = j;
