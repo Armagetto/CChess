@@ -28,10 +28,12 @@ typedef struct
 {
 	piece piecesArray[BOARD_SIZE][BOARD_SIZE];
 	int boardBace[BOARD_SIZE][BOARD_SIZE];
+	int playerTurn;
 }board;
 
 
 /*functions*/
+
 
 //color logic (windows)
 
@@ -44,7 +46,7 @@ void colorChange_white() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDL
 void colorChange_gray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8); };
 void colorChange_whiteBlue() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 23); };
 
-//main functions
+//main game functions
 void BuildChessBoard(board* b)
 {
 	//vars 
@@ -137,8 +139,8 @@ void printBoard(board* b)
 			switch (b->piecesArray[x][y].piceType)
 			{
 			case pawn:
-					colorResolver(b,x,y);
-					printf("|P|");
+				colorResolver(b,x,y);
+				printf("|P|");
 		
 				break;
 			case rook:
@@ -191,8 +193,42 @@ void printBoard(board* b)
 	}
 }
 
-char* movePiece(piece piece,char **location)
+char* movePiece(board* b)
 {
+	//vars
+	char PieceAndLocation[3]; //for ex pd4
+	//get the piece to move
+	if (scanf("%s", PieceAndLocation) == NULL)
+		return NULL;
+	//need to add: cheak that the move was leagal(all the ruls of chess)+ not longer then 3+ on the board
+	//scan for currnt piece location (to remove it)
+	int i;
+	int j;
+	int x = 0;
+	int y = 0;
+	for (i=0; i < BOARD_SIZE ; i++) {
+		for (j=0; j < BOARD_SIZE ; j++) {
+			//if found
+			if (b->piecesArray[i][j].piceType == pawn && b->playerTurn == white) {
+				//save and brake
+				x = i;
+				y = j;
+				break;
+			}
+		}
+		if (b->piecesArray[i][j].piceType == pawn && b->playerTurn == white)
+			break;
+	}
+	//remove from old loaction and save in temp
+	piece temp = b->piecesArray[x][y];
+	b->piecesArray[x][y].piceType = empty;
+	b->piecesArray[x][y].playerType = nor;
 
+
+	//enter piece to new location
+	//b->piecesArray[PieceAndLocation[1]][PieceAndLocation[2]].piceType = pawn;
+	//b->piecesArray[PieceAndLocation[1]][PieceAndLocation[2]].playerType = pawn;
+
+	
 }
 
