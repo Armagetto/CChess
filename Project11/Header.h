@@ -8,6 +8,21 @@
 #include <Windows.h>
 
 
+/*
+//global
+int metrix[BOARD_SIZE-1][BOARD_SIZE-1] =
+{
+	0,1,0,1,0,1,0,1,
+	1,0,1,0,1,0,1,0,
+	0,1,0,1,0,1,0,1,
+	1,0,1,0,1,0,1,0,
+	0,1,0,1,0,1,0,1,
+	1,0,1,0,1,0,1,0,
+	0,1,0,1,0,1,0,1,
+	1,0,1,0,1,0,1,0
+};
+*/
+
 /*define ENUM type */
 enum PieceType { empty, pawn = 1, bishop, knight, rook=5, queen = 9, king};
 enum playerType { black, white, nor};
@@ -48,7 +63,7 @@ void colorChange_whiteBlue() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_H
 void BuildChessBoard(board* b)
 {
 	//vars 
-	int counterForPrintingBlackWhite = white;
+	int counterForPrintingBlackWhite = white; //start couting from white
 
 	//sets all pieces to empty
 	for (int counter1 = 0; counter1 < BOARD_SIZE; counter1++)
@@ -63,7 +78,7 @@ void BuildChessBoard(board* b)
 				b->boardBace[counter1][counter2] = white;
 			else
 				b->boardBace[counter1][counter2] = black;
-			counterForPrintingBlackWhite = !counterForPrintingBlackWhite; 
+			counterForPrintingBlackWhite = !counterForPrintingBlackWhite; //flip start
 		}
 	}
 
@@ -118,6 +133,13 @@ void colorResolver(board* b, int x, int y)
 		grayOnWhite();
 	if (b->piecesArray[x][y].playerType == white && b->boardBace[x][y] == black)
 		grayOnLightGray();
+
+	//default (empty)
+	if (b->piecesArray[x][y].piceType == empty && b->boardBace[x][y] == white)
+		grayOnWhite();
+	if (b->piecesArray[x][y].piceType == empty && b->boardBace[x][y] == black)
+		grayOnLightGray();
+
 }
 
 void printBoard(board* b)
@@ -162,16 +184,19 @@ void printBoard(board* b)
 				printf("|Q|");
 				break;
 			case empty:
-				colorChange_whiteBlue();
+				colorResolver(b, x, y);
+				
 				if (y == BOARD_SIZE-1) 
 				{
+					colorChange_whiteBlue();
 					printf(" %c ",lineAlphabet[x]);
 				}
 				else if (x == BOARD_SIZE - 1) {
+					colorChange_whiteBlue();
 					printf(" %c ", lineNumbers[y]);
 				}
 				else {
-					colorChange_white();
+					colorResolver(b, x, y);
 					printf("|_|");
 				}
 					
@@ -179,25 +204,28 @@ void printBoard(board* b)
 				colorChange_gray();
 				break;
 			}
+
 			//on last print
 			if (x == BOARD_SIZE - 1) {
 				printf("\n");
 			}
-			else if (y == BOARD_SIZE - 1) {
-
-			}
-
+			
+			
 		}
+
 	}
 }
 
 char* movePiece(board* b)
 {
 	//vars
-	char PieceAndLocation[3]; //for ex pd4
+	char PieceAndLocation[3]; //for example: pd4- pawn to d4
 	//get the piece to move
 	if (scanf("%s", PieceAndLocation) == NULL)
 		return NULL;
+	//cut
+	int userChoosenPiece = (int)PieceAndLocation[0];
+
 	//need to add: cheak that the move was leagal(all the ruls of chess)+ not longer then 3+ on the board
 	//scan for currnt piece location (to remove it)
 	int i;
@@ -208,14 +236,14 @@ char* movePiece(board* b)
 	for (i=0; i < BOARD_SIZE-1 ; i++) {
 		for (j=0; j < BOARD_SIZE-1 ; j++) {
 			//if found
-			if (b->piecesArray[i][j].piceType == pawn && b->piecesArray[i][j].playerType == white) {
+			if (b->piecesArray[i][j].piceType == pawn && b->piecesArray[i][j].playerType == b->playerTurn) {
 				//save and brake
 				x = i;
 				y = j;
 				break;
 			}
 		}
-		if (b->piecesArray[i][j].piceType == pawn && b->playerTurn == white)
+		if (b->piecesArray[i][j].piceType == pawn && b->playerTurn == b->playerTurn)
 			break;
 	}
 	//remove from old loaction and save in temp
