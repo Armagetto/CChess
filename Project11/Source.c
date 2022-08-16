@@ -3,6 +3,7 @@
 
 void main() {
 	board b;
+	int gameSwitch = 1; //game on
 	BuildChessBoard(&b);
 	
 	//printf("Headline!\nsubtext subtext\n\n");
@@ -11,12 +12,16 @@ void main() {
 	
 	b.playerTurn = white;
 
-	//move piece
-	movePiece(&b);
-	system("cls");
-	printBoard(&b);
-	//make sure it sorkd (was leagal etc)
-	//clear screen
-	//print new board
+	//game loop
+	while (gameSwitch) {
+		if (movePiece(&b) == NULL) {
+			gameSwitch = 0;
+			error();
+			break;
+		}
+		system("cls");
+		printBoard(&b);
+	}
+	
 
 }

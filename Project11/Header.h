@@ -31,6 +31,10 @@ typedef struct
 
 
 /*functions*/
+//error
+void error() { printf("error!\n"); };
+
+
 //color logic (windows)
 void blackOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240); }; //black on white
 void blackOnLightGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 112); }; //black on black
@@ -193,34 +197,73 @@ void printBoard(board* b)
 	}
 }
 
+char* stringToPices(char* stirng)
+{
+	switch (stirng[0])
+	{
+	case 'p':
+		stirng[0] = pawn;
+		break;
+	case 'r':
+		stirng[0] = rook;
+		break;
+	case 'n':
+		stirng[0] = knight;
+		break;
+	case 'b':
+		stirng[0] = bishop;
+		break;
+	case 'k':
+		stirng[0] = king;
+		break;
+	case 'q':
+		stirng[0] = queen;
+		break;
+	default:
+		return NULL;
+		break;
+	}
+}
+
 char* movePiece(board* b)
 {
 	//vars
 	char PieceAndLocation[3]; //for example: pd4- pawn to d4
-	//get the piece to move
-	if (scanf("%s", PieceAndLocation) == NULL)
-		return NULL;
-	//cut
-	int userChoosenPiece = (int)PieceAndLocation[0];
-
-	//need to add: cheak that the move was leagal(all the ruls of chess)+ not longer then 3+ on the board
-	//scan for currnt piece location (to remove it)
 	int i;
 	int j;
 	int x = 0;
 	int y = 0;
+
+	//get the piece to move
+	if (scanf("%s", PieceAndLocation) == NULL)
+		return NULL;
+	//cut and make sure it's fine
+	while (stringToPices(PieceAndLocation) == NULL) {
+		//if illegal move
+		printf("Bad name!\ntry again: ");
+		if (scanf("%s", PieceAndLocation) == NULL)
+			return NULL;
+	}
+	 
+	
+
+	//need to add: cheak that the move was leagal(all the ruls of chess)+ not longer then 3+ on the board
+	
+
+	//scan for currnt piece location (to remove it)
+	
 	//scan for piece
 	for (i=0; i < BOARD_SIZE-1 ; i++) {
 		for (j=0; j < BOARD_SIZE-1 ; j++) {
 			//if found
-			if (b->piecesArray[i][j].piceType == pawn && b->piecesArray[i][j].playerType == b->playerTurn) {
+			if (b->piecesArray[i][j].piceType == PieceAndLocation[0] && b->piecesArray[i][j].playerType == b->playerTurn) {
 				//save and brake
 				x = i;
 				y = j;
 				break;
 			}
 		}
-		if (b->piecesArray[i][j].piceType == pawn && b->playerTurn == b->playerTurn)
+		if (b->piecesArray[i][j].piceType == PieceAndLocation[0] && b->playerTurn == b->playerTurn)
 			break;
 	}
 	//remove from old loaction and save in temp
