@@ -1,8 +1,6 @@
 ﻿#pragma once
 #define _CRT_SECURE_NO_WARNINGS
-#define BOARD_SIZE 9 //8X8 is for chess + 1 for numbers and latters
-#define COLOR_BOLD  "\e[1m"
-#define COLOR_OFF   "\e[m"
+#define BOARD_SIZE 9 //8X8 is for chess 9X9 for numbers and latters
 
 #include <stdio.h>
 #include <malloc.h>
@@ -206,10 +204,11 @@ char* movePiece(board* b)
 	int j;
 	int x = 0;
 	int y = 0;
-	for (i=0; i < BOARD_SIZE ; i++) {
-		for (j=0; j < BOARD_SIZE ; j++) {
+	//scan for piece
+	for (i=0; i < BOARD_SIZE-1 ; i++) {
+		for (j=0; j < BOARD_SIZE-1 ; j++) {
 			//if found
-			if (b->piecesArray[i][j].piceType == pawn && b->playerTurn == white) {
+			if (b->piecesArray[i][j].piceType == pawn && b->piecesArray[i][j].playerType == white && b->playerTurn == white) {
 				//save and brake
 				x = i;
 				y = j;
@@ -225,9 +224,10 @@ char* movePiece(board* b)
 	b->piecesArray[x][y].playerType = nor;
 
 
-	//enter piece to new location
-	//b->piecesArray[PieceAndLocation[1]][PieceAndLocation[2]].piceType = pawn;
-	//b->piecesArray[PieceAndLocation[1]][PieceAndLocation[2]].playerType = pawn;
+	//enter piece to new location and update turn
+	b->piecesArray[3][3].piceType = pawn; //update location
+	b->piecesArray[3][3].playerType = b->playerTurn; //update ownership
+	b->playerTurn = !b->playerTurn; //flip turn
 
 	
 }
