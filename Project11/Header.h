@@ -13,13 +13,13 @@
 
 //globals
 char lineAlphabet[BOARD_SIZE] = { 'A','B','C','D','E','F','G','H',' ' };
-char lineNumbers[8] = { '8','7','6','5','4','3','2','1' };
+char lineNumbers[BOARD_SIZE] = { '8','7','6','5','4','3','2','1' };
 
 
 /*define ENUM type */
 enum PieceType { empty, pawn = 1, bishop, knight, rook=5, queen = 9, king};
 enum playerType { black, white, nor};
-enum boardCoordinates { A , B, C, D, E, F, G, H};
+enum boardCoordinates { A,B,C,D,E,F,G,H };
 
 
 /*structs*/
@@ -39,8 +39,13 @@ typedef struct
 
 
 /*functions*/
-//error
-void error() { printf("error!\n"); };
+//error message
+void error(char* errorMessage) {
+	if (errorMessage == NULL )
+		printf("Error! unknown error\n"); 
+	else
+		printf("Error! code %s\n", errorMessage); 
+};
 
 
 //color logic (windows)
@@ -244,9 +249,9 @@ int* stringToPices(char* string)
 		return NULL;
 
 	//Making sure it's always a number
-	if (!isdigit(string[2])) {
+	if (!isdigit(string[2]))
 		return NULL;
-	}
+	
 	
 	//last key
 	stringToNumbers[2] = (BOARD_SIZE-1) - (string[2] - '0');
@@ -268,7 +273,7 @@ char* movePiece(board* b)
 	if (b->playerTurn)
 	printf("Whites turn: ");
 	else
-	printf("blacks turn: ");
+	printf("Blacks turn: ");
 
 	//get the piece to move
 	if (scanf("%s", PieceAndLocation) == NULL)
@@ -285,7 +290,7 @@ char* movePiece(board* b)
 	//need to add: cheak that the move was leagal(all the ruls of chess)+ not longer then 3+ on the board
 	
 	//scan for piece location
-	for (i=0; i < BOARD_SIZE-1 ; i++) {
+	for (i=0; i < BOARD_SIZE-1; i++) {
 		for (j=0; j < BOARD_SIZE-1 ; j++) {
 			//if found
 			if (b->piecesArray[i][j].piceType == moveCommad[0] && b->piecesArray[i][j].playerType == b->playerTurn) {

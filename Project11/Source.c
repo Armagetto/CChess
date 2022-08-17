@@ -16,7 +16,7 @@ void main() {
 	while (gameSwitch) {
 		if (movePiece(&b) == NULL) {
 			gameSwitch = 0;
-			error();
+			error("001");
 			break;
 		}
 		system("cls");
