@@ -7,12 +7,12 @@
 #include <malloc.h>
 #include <string.h>
 #include <Windows.h>
+#include <ctype.h>
 
 
 
 //globals
 char lineAlphabet[BOARD_SIZE] = { 'A','B','C','D','E','F','G','H',' ' };
-//char lineAlphabet[BOARD_SIZE] = { 'A','B','C','D','E','F','G','H',' ', '\0' };
 char lineNumbers[8] = { '8','7','6','5','4','3','2','1' };
 
 
@@ -200,9 +200,10 @@ void printBoard(board* b)
 	}
 }
 
+//iterprets user command to location in numbers
 int* stringToPices(char* string)
 {
-	int stringToNumbers[3];
+	int stringToNumbers[3] = { NULL };
 	switch (string[0])
 	{
 	case 'p':
@@ -224,27 +225,31 @@ int* stringToPices(char* string)
 		stringToNumbers[0] = queen;
 		break;
 	default:
-		//no piece was found
+		//no leagal piece was found
 		return NULL;
 		break;
 	}
 
 	
 	//get the next latter
+	//make sure it's in range
 	for (int i = 0; i < BOARD_SIZE - 1;i++) {
 		if (string[1] == lineAlphabet[i]) {
-			stringToNumbers[1] = i + 1;
+			stringToNumbers[1] = i;
 			break;
 		}
 	}
+	//make sure it's found (was in range)
+	if (stringToNumbers[1] == NULL)
+		return NULL;
 
 	//Making sure it's always a number
-	/*
-	if (!isdigit(atoi(string[2]))) {
+	if (!isdigit(string[2])) {
 		return NULL;
 	}
-	*/
-	stringToNumbers[2] = 8 - (string[2] - '0');
+	
+	//last key
+	stringToNumbers[2] = (BOARD_SIZE-1) - (string[2] - '0');
 
 
 	return stringToNumbers;
@@ -283,18 +288,17 @@ char* movePiece(board* b)
 	for (i=0; i < BOARD_SIZE-1 ; i++) {
 		for (j=0; j < BOARD_SIZE-1 ; j++) {
 			//if found
-			if (b->piecesArray[i][j].piceType == PieceAndLocation[0] && b->piecesArray[i][j].playerType == b->playerTurn) {
+			if (b->piecesArray[i][j].piceType == moveCommad[0] && b->piecesArray[i][j].playerType == b->playerTurn) {
 				//save and brake
 				x = i;
 				y = j;
 				break;
 			}
 		}
-		if (b->piecesArray[i][j].piceType == PieceAndLocation[0] && b->playerTurn == b->playerTurn)
+		if (b->piecesArray[i][j].piceType == moveCommad[0] && b->playerTurn == b->playerTurn)
 			break;
 	}
 	//remove from old loaction and save in temp
-	//piece temp = b->piecesArray[x][y];
 	b->piecesArray[x][y].piceType = empty;
 	b->piecesArray[x][y].playerType = nor;
 
@@ -303,5 +307,4 @@ char* movePiece(board* b)
 	b->piecesArray[moveCommad[1]][moveCommad[2]].piceType = moveCommad[0]; //update location
 	b->piecesArray[moveCommad[1]][moveCommad[2]].playerType = b->playerTurn; //update ownership
 	b->playerTurn = !b->playerTurn; //flip turn
-	
 }
