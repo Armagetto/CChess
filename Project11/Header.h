@@ -260,6 +260,40 @@ int* stringToPices(char* string)
 	return stringToNumbers;
 }
 
+//piece pieceSelectionDecider resolver
+int pieceSelectionDecider(int* pieceType, int x, int y)
+{
+	int* temp = pieceType;
+	switch (temp[0])
+	{
+	case pawn:
+		if (temp[1] == y+1)
+			return 1;
+		break;
+	case rook:
+		
+		break;
+	case knight:
+		
+		break;
+	case bishop:
+		
+		break;
+	case king:
+		
+		break;
+	case queen:
+		
+		break;
+
+	default:
+		return 0;
+		break;
+	}
+
+}
+
+
 char* movePiece(board* b)
 {
 	//vars
@@ -293,7 +327,7 @@ char* movePiece(board* b)
 	for (i=0; i < BOARD_SIZE-1; i++) {
 		for (j=0; j < BOARD_SIZE-1 ; j++) {
 			//if found
-			if (b->piecesArray[i][j].piceType == moveCommad[0] && b->piecesArray[i][j].playerType == b->playerTurn) {
+			if (b->piecesArray[i][j].piceType == moveCommad[0] && b->piecesArray[i][j].playerType == b->playerTurn && pieceSelectionDecider(moveCommad,i,j)) {
 				//save and brake
 				x = i;
 				y = j;
