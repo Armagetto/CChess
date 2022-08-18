@@ -206,102 +206,66 @@ void printBoard(board* b)
 }
 
 //iterprets user command to location in numbers
-int* stringToPices(char* string)
+int* stringToInt(char* string)
 {
-	int stringToNumbers[3] = { NULL };
-	switch (string[0])
-	{
-	case 'p':
-		stringToNumbers[0] = pawn;
-		break;
-	case 'r':
-		stringToNumbers[0] = rook;
-		break;
-	case 'n':
-		stringToNumbers[0] = knight;
-		break;
-	case 'b':
-		stringToNumbers[0] = bishop;
-		break;
-	case 'k':
-		stringToNumbers[0] = king;
-		break;
-	case 'q':
-		stringToNumbers[0] = queen;
-		break;
-	default:
-		//no leagal piece was found
-		return NULL;
-		break;
-	}
+	int stringToNumbers[4] = { NULL };
 
-	
-	//get the next latter
-	//make sure it's in range
+	//get the first letter
 	for (int i = 0; i < BOARD_SIZE - 1;i++) {
-		if (string[1] == lineAlphabet[i]) {
-			stringToNumbers[1] = i;
+		if (string[0] == lineAlphabet[i]) {
+			stringToNumbers[0] = i;
 			break;
 		}
 	}
 	//make sure it's found (was in range)
-	if (stringToNumbers[1] == NULL)
+	if (stringToNumbers[0] == NULL && stringToNumbers[0] != 0)
 		return NULL;
 
 	//Making sure it's always a number
-	if (!isdigit(string[2]))
+	if (!isdigit(string[1]))
 		return NULL;
 	
-	
 	//last key
-	stringToNumbers[2] = (BOARD_SIZE-1) - (string[2] - '0');
+	stringToNumbers[1] = (BOARD_SIZE-1) - (string[1] - '0');
+
+	/////////////copy needs to fix /////////////
+
+	//get the first letter
+	for (int i = 0; i < BOARD_SIZE - 1; i++) {
+		if (string[2] == lineAlphabet[i]) {
+			stringToNumbers[2] = i;
+			break;
+		}
+	}
+	//make sure it's found (was in range)
+	if (stringToNumbers[2] == NULL && stringToNumbers[2] != 0)
+		return NULL;
+
+	//Making sure it's always a number
+	if (!isdigit(string[3]))
+		return NULL;
+
+	//last key
+	stringToNumbers[3] = (BOARD_SIZE - 1) - (string[3] - '0');
 
 
 	return stringToNumbers;
 }
 
-//piece pieceSelectionDecider resolver
-int pieceSelectionDecider(int* pieceType, int x, int y)
+//temp
+int* stringToCommand(int* pieceType)
 {
-	int* temp = pieceType;
-	switch (temp[0])
-	{
-	case pawn:
-		if (temp[1] == y+1)
-			return 1;
-		break;
-	case rook:
-		
-		break;
-	case knight:
-		
-		break;
-	case bishop:
-		
-		break;
-	case king:
-		
-		break;
-	case queen:
-		
-		break;
+	//int* finalMoveCommand = stringToInt(pieceType[0]) + stringToInt(pieceType[2]);
 
-	default:
-		return 0;
-		break;
-	}
 
+	//return finalMoveCommand;
 }
 
 
 char* movePiece(board* b)
 {
 	//vars
-	char PieceAndLocation[4] = { NULL }; //for example: pd4- pawn to d4
-	int i;
-	int j;
-	int x = 0;
-	int y = 0;
+	char locationToLocation[5] = { NULL }; //for example: d2d4- pawn to from d2 to d4
 
 	//player turn message
 	if (b->playerTurn)
@@ -310,40 +274,27 @@ char* movePiece(board* b)
 	printf("Blacks turn: ");
 
 	//get the piece to move
-	if (scanf("%s", PieceAndLocation) == NULL)
+	if (scanf("%s", locationToLocation) == NULL)
 		return NULL;
 	//cut and make sure it's fine
-	int* moveCommad;
-	while ((moveCommad = stringToPices(PieceAndLocation)) == NULL) {
+	int* moveCommad = { NULL };
+	while ((moveCommad = stringToInt(locationToLocation)) == NULL) {
 		//if illegal move
 		printf("Bad name!\ntry again: ");
-		if (scanf("%s", PieceAndLocation) == NULL)
+		if (scanf("%s", locationToLocation) == NULL)
 			return NULL;
 	}
 
 	//need to add: cheak that the move was leagal(all the ruls of chess)+ not longer then 3+ on the board
 	
-	//scan for piece location
-	for (i=0; i < BOARD_SIZE-1; i++) {
-		for (j=0; j < BOARD_SIZE-1 ; j++) {
-			//if found
-			if (b->piecesArray[i][j].piceType == moveCommad[0] && b->piecesArray[i][j].playerType == b->playerTurn && pieceSelectionDecider(moveCommad,i,j)) {
-				//save and brake
-				x = i;
-				y = j;
-				break;
-			}
-		}
-		if (b->piecesArray[i][j].piceType == moveCommad[0] && b->playerTurn == b->playerTurn)
-			break;
-	}
-	//remove from old loaction and save in temp
-	b->piecesArray[x][y].piceType = empty;
-	b->piecesArray[x][y].playerType = nor;
-
-
+	
 	//enter piece to new location and update turn
-	b->piecesArray[moveCommad[1]][moveCommad[2]].piceType = moveCommad[0]; //update location
-	b->piecesArray[moveCommad[1]][moveCommad[2]].playerType = b->playerTurn; //update ownership
+	b->piecesArray[moveCommad[2]][moveCommad[3]].piceType = b->piecesArray[moveCommad[0]][moveCommad[1]].piceType; //update location
+	b->piecesArray[moveCommad[2]][moveCommad[3]].playerType = b->playerTurn; //update ownership
+
+	//remove from old loaction
+	b->piecesArray[moveCommad[0]][moveCommad[1]].piceType = empty;
+	b->piecesArray[moveCommad[0]][moveCommad[1]].playerType = nor;
+
 	b->playerTurn = !b->playerTurn; //flip turn
 }
