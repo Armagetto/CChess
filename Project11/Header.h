@@ -17,9 +17,9 @@ char lineNumbers[BOARD_SIZE] = { '8','7','6','5','4','3','2','1' };
 
 
 /*define ENUM type */
-enum PieceType { empty, pawn = 1, bishop, knight, rook=5, queen = 9, king};
-enum playerType { black, white, nor};
-enum boardCoordinates { A,B,C,D,E,F,G,H };
+enum PieceType { empty, pawn = 1, bishop, knight, rook = 5, queen = 9, king };
+enum playerType { black, white, nor };
+enum boardCoordinates { A, B, C, D, E, F, G, H };
 
 
 /*structs*/
@@ -41,10 +41,10 @@ typedef struct
 /*functions*/
 //error message
 void error(char* errorMessage) {
-	if (errorMessage == NULL )
-		printf("Error! unknown error\n"); 
+	if (errorMessage == NULL)
+		printf("Error! unknown error\n");
 	else
-		printf("Error! code %s\n", errorMessage); 
+		printf("Error! code %s\n", errorMessage);
 };
 
 
@@ -92,7 +92,7 @@ void BuildChessBoard(board* b)
 	b->piecesArray[D][7].piceType = queen;
 	b->piecesArray[E][7].piceType = king;
 
-	for (int i = 0; i < BOARD_SIZE-1;i++)
+	for (int i = 0; i < BOARD_SIZE - 1; i++)
 	{
 		b->piecesArray[i][6].piceType = pawn;
 		b->piecesArray[i][6].playerType = white;
@@ -102,17 +102,17 @@ void BuildChessBoard(board* b)
 	//sets white
 	b->piecesArray[A][0].piceType = rook;
 	b->piecesArray[H][0].piceType = rook;
-					
+
 	b->piecesArray[B][0].piceType = knight;
 	b->piecesArray[G][0].piceType = knight;
-					
+
 	b->piecesArray[C][0].piceType = bishop;
 	b->piecesArray[F][0].piceType = bishop;
-					 
+
 	b->piecesArray[D][0].piceType = queen;
 	b->piecesArray[E][0].piceType = king;
 
-	for (int i = 0; i < BOARD_SIZE-1; i++)
+	for (int i = 0; i < BOARD_SIZE - 1; i++)
 	{
 		b->piecesArray[i][1].piceType = pawn;
 		b->piecesArray[i][1].playerType = black;
@@ -142,7 +142,7 @@ void colorResolver(board* b, int x, int y)
 
 void printBoard(board* b)
 {
-	
+
 	//print
 	for (int y = 0; y < BOARD_SIZE; y++)
 	{
@@ -151,9 +151,8 @@ void printBoard(board* b)
 			switch (b->piecesArray[x][y].piceType)
 			{
 			case pawn:
-				colorResolver(b,x,y);
+				colorResolver(b, x, y);
 				printf("P ");
-		
 				break;
 			case rook:
 				colorResolver(b, x, y);
@@ -177,11 +176,11 @@ void printBoard(board* b)
 				break;
 			case empty:
 				colorResolver(b, x, y);
-				
-				if (y == BOARD_SIZE-1) 
+
+				if (y == BOARD_SIZE - 1)
 				{
 					colorChangeWhiteBlue();
-					printf("%c ",lineAlphabet[x]);
+					printf("%c ", lineAlphabet[x]);
 				}
 				else if (x == BOARD_SIZE - 1) {
 					colorChangeWhiteBlue();
@@ -191,7 +190,7 @@ void printBoard(board* b)
 					colorResolver(b, x, y);
 					printf("  ");
 				}
-					
+
 			default:
 				colorChangeDefault();
 				break;
@@ -206,12 +205,12 @@ void printBoard(board* b)
 }
 
 //iterprets user command to location in numbers
-int* stringToInt(char* string)
+int* userMoveResolver(char* string, board* b)
 {
 	int stringToNumbers[4] = { NULL };
 
 	//get the first letter
-	for (int i = 0; i < BOARD_SIZE - 1;i++) {
+	for (int i = 0; i < BOARD_SIZE - 1; i++) {
 		if (string[0] == lineAlphabet[i]) {
 			stringToNumbers[0] = i;
 			break;
@@ -224,11 +223,11 @@ int* stringToInt(char* string)
 	//Making sure it's always a number
 	if (!isdigit(string[1]))
 		return NULL;
-	
-	//last key
-	stringToNumbers[1] = (BOARD_SIZE-1) - (string[1] - '0');
 
-	/////////////copy needs to fix /////////////
+	//last key
+	stringToNumbers[1] = (BOARD_SIZE - 1) - (string[1] - '0');
+
+	//next location
 
 	//get the first letter
 	for (int i = 0; i < BOARD_SIZE - 1; i++) {
@@ -252,16 +251,6 @@ int* stringToInt(char* string)
 	return stringToNumbers;
 }
 
-//temp
-int* stringToCommand(int* pieceType)
-{
-	//int* finalMoveCommand = stringToInt(pieceType[0]) + stringToInt(pieceType[2]);
-
-
-	//return finalMoveCommand;
-}
-
-
 char* movePiece(board* b)
 {
 	//vars
@@ -269,16 +258,16 @@ char* movePiece(board* b)
 
 	//player turn message
 	if (b->playerTurn)
-	printf("Whites turn: ");
+		printf("Whites turn: ");
 	else
-	printf("Blacks turn: ");
+		printf("Blacks turn: ");
 
 	//get the piece to move
 	if (scanf("%s", locationToLocation) == NULL)
 		return NULL;
 	//cut and make sure it's fine
-	int* moveCommad = { NULL };
-	while ((moveCommad = stringToInt(locationToLocation)) == NULL) {
+	int* userFinalMove = { NULL };
+	while ((userFinalMove = userMoveResolver(locationToLocation,b)) == NULL) {
 		//if illegal move
 		printf("Bad name!\ntry again: ");
 		if (scanf("%s", locationToLocation) == NULL)
@@ -286,15 +275,15 @@ char* movePiece(board* b)
 	}
 
 	//need to add: cheak that the move was leagal(all the ruls of chess)+ not longer then 3+ on the board
-	
-	
+
+
 	//enter piece to new location and update turn
-	b->piecesArray[moveCommad[2]][moveCommad[3]].piceType = b->piecesArray[moveCommad[0]][moveCommad[1]].piceType; //update location
-	b->piecesArray[moveCommad[2]][moveCommad[3]].playerType = b->playerTurn; //update ownership
+	b->piecesArray[userFinalMove[2]][userFinalMove[3]].piceType = b->piecesArray[userFinalMove[0]][userFinalMove[1]].piceType; //update location
+	b->piecesArray[userFinalMove[2]][userFinalMove[3]].playerType = b->playerTurn; //update ownership
 
 	//remove from old loaction
-	b->piecesArray[moveCommad[0]][moveCommad[1]].piceType = empty;
-	b->piecesArray[moveCommad[0]][moveCommad[1]].playerType = nor;
+	b->piecesArray[userFinalMove[0]][userFinalMove[1]].piceType = empty;
+	b->piecesArray[userFinalMove[0]][userFinalMove[1]].playerType = nor;
 
 	b->playerTurn = !b->playerTurn; //flip turn
 }
