@@ -13,6 +13,8 @@
 //globals
 char lineAlphabet[BOARD_SIZE] = { 'A','B','C','D','E','F','G','H',' ' };
 char lineNumbers[BOARD_SIZE] = { '8','7','6','5','4','3','2','1' };
+int zeroIfPawnFirstMoveArray_White[BOARD_SIZE - 1] = { 0 }; //takes track on the first moves of pawns
+int zeroIfPawnFirstMoveArray_Black[BOARD_SIZE - 1] = { 0 }; //takes track on the first moves of pawns
 
 
 /*define ENUM type */
@@ -251,45 +253,69 @@ int* userMoveResolver(char* string, board* b)
 int moveTester(int* userMove, board* b)
 {
 	//if the piece beloges to him- then allow
-	if (b->playerTurn != b->piecesArray[userMove[0]][userMove[1]].playerType) {
+	if (b->playerTurn != b->piecesArray[userMove[0]][userMove[1]].playerType)
+	{
 		printf("You can only move your own pieces...\n");
 		return 0;
 	}
 		//pawn move logic
-		if (b->piecesArray[userMove[0]][userMove[1]].piceType == pawn) {
-			if (userMove[0] != userMove[2]) {	//el passar not included
+		if (b->piecesArray[userMove[0]][userMove[1]].piceType == pawn)
+		{
+			//en passant not included yet!
+			if (userMove[0] != userMove[2]) 
+			{	
 				printf("Pawns can't move like that...\n");
 				return 0;
 			}
 
 			//black pawn logic
-			if (b->piecesArray[userMove[0]][userMove[1]].playerType == black) { 
-				//if jump more then 2
-				if (userMove[3] != userMove[1] + 1 && userMove[3] != userMove[1] + 2) {
+			else if (b->piecesArray[userMove[0]][userMove[1]].playerType == black)
+			{ 
+				
+				//if jump nor by 1 or 2
+				 if (userMove[3] != userMove[1] + 1 && userMove[3] != userMove[1] + 2)
+				{
 					printf("Pawns can't move like that...\n");
 					return 0;
 				}
 				//if jumpt on another piece
-				else if ((b->piecesArray[userMove[2]][userMove[3]].piceType != empty) /* || (b->piecesArray[userMove[2] + 1][userMove[3] + 1].piceType != empty)*/) {
-					printf("Pawns can't move like that...\n");
+				else if (b->piecesArray[userMove[2]][userMove[3]].piceType != empty)
+				{
+					printf("That square is taken(1)...\n");
+					return 0;
+				}
+				else if (b->piecesArray[userMove[2]][userMove[3] - 1].piceType != empty)
+				{
+					printf("That square is taken(2)...\n");
 					return 0;
 				}
 			}
 
 			//white pawn logic
-			if (b->piecesArray[userMove[0]][userMove[1]].playerType == white) {
+			if (b->piecesArray[userMove[0]][userMove[1]].playerType == white)
+			{
 				//if jump more then 2
-				if (userMove[3] != userMove[1] - 1 && userMove[3] != userMove[1] - 2) {
+				if (userMove[3] != userMove[1] - 1 && userMove[3] != userMove[1] - 2)
+				{
 					printf("Pawns can't move like that...\n");
 					return 0;
 				}
 				//if jumpt on another piece
-				else if ((b->piecesArray[userMove[2]][userMove[3]].piceType != empty) /*|| (b->piecesArray[userMove[2] - 1][userMove[3] - 1].piceType != empty) */ ) {
+				else if (b->piecesArray[userMove[2]][userMove[3]].piceType != empty)
+				{
+					printf("Pawns can't move like that...\n");
+					return 0;
+				}
+				else if (b->piecesArray[userMove[2]][userMove[3]-1].piceType != empty)
+				{
 					printf("Pawns can't move like that...\n");
 					return 0;
 				}
 			}
 		}
+		//update pawn first move
+		//zeroIfPawnFirstMoveArray_black[userMove[0]] = 1;
+		/*missing en passant special case*/
 
 		return 1; //approve the move
 }
@@ -317,7 +343,7 @@ char* movePiece(board* b)
 			return NULL;
 	}
 
-	//enter piece to new location and update turn
+	//enter piece to new location
 	b->piecesArray[userFinalMove[2]][userFinalMove[3]].piceType = b->piecesArray[userFinalMove[0]][userFinalMove[1]].piceType; //update location
 	b->piecesArray[userFinalMove[2]][userFinalMove[3]].playerType = b->playerTurn; //update ownership
 
@@ -325,5 +351,6 @@ char* movePiece(board* b)
 	b->piecesArray[userFinalMove[0]][userFinalMove[1]].piceType = empty;
 	b->piecesArray[userFinalMove[0]][userFinalMove[1]].playerType = nor;
 
-	b->playerTurn = !b->playerTurn; //flip turn
+	//update turn
+	b->playerTurn = !b->playerTurn;
 }
