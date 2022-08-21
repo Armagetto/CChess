@@ -10,7 +10,6 @@
 #include <ctype.h>
 
 
-
 //globals
 char lineAlphabet[BOARD_SIZE] = { 'A','B','C','D','E','F','G','H',' ' };
 char lineNumbers[BOARD_SIZE] = { '8','7','6','5','4','3','2','1' };
@@ -91,7 +90,7 @@ void BuildChessBoard(board* b)
 
 	b->piecesArray[D][7].piceType = queen;
 	b->piecesArray[E][7].piceType = king;
-
+	//black pawns
 	for (int i = 0; i < BOARD_SIZE - 1; i++)
 	{
 		b->piecesArray[i][6].piceType = pawn;
@@ -111,7 +110,7 @@ void BuildChessBoard(board* b)
 
 	b->piecesArray[D][0].piceType = queen;
 	b->piecesArray[E][0].piceType = king;
-
+	//white pawns
 	for (int i = 0; i < BOARD_SIZE - 1; i++)
 	{
 		b->piecesArray[i][1].piceType = pawn;
@@ -137,12 +136,10 @@ void colorResolver(board* b, int x, int y)
 		grayOnWhite();
 	if (b->piecesArray[x][y].piceType == empty && b->boardBace[x][y] == black)
 		grayOnLightGray();
-
 }
 
 void printBoard(board* b)
 {
-
 	//print
 	for (int y = 0; y < BOARD_SIZE; y++)
 	{
@@ -190,12 +187,10 @@ void printBoard(board* b)
 					colorResolver(b, x, y);
 					printf("  ");
 				}
-
 			default:
 				colorChangeDefault();
 				break;
 			}
-
 			//on last print
 			if (x == BOARD_SIZE - 1) {
 				printf("\n");
@@ -227,7 +222,7 @@ int* userMoveResolver(char* string, board* b)
 	//last key
 	stringToNumbers[1] = (BOARD_SIZE - 1) - (string[1] - '0');
 
-	//next location
+	/*next location*/
 
 	//get the first letter
 	for (int i = 0; i < BOARD_SIZE - 1; i++) {
@@ -247,8 +242,56 @@ int* userMoveResolver(char* string, board* b)
 	//last key
 	stringToNumbers[3] = (BOARD_SIZE - 1) - (string[3] - '0');
 
-
+	//make sure the move is leagal
+	if (moveTester(stringToNumbers, b) == 0)
+		return NULL;
 	return stringToNumbers;
+}
+
+int moveTester(int* userMove, board* b)
+{
+	//if the piece beloges to him- then allow
+	if (b->playerTurn != b->piecesArray[userMove[0]][userMove[1]].playerType) {
+		printf("You can only move your own pieces...\n");
+		return 0;
+	}
+		//pawn move logic
+		if (b->piecesArray[userMove[0]][userMove[1]].piceType == pawn) {
+			if (userMove[0] != userMove[2]) {	//el passar not included
+				printf("Pawns can't move like that...\n");
+				return 0;
+			}
+
+			//black pawn logic
+			if (b->piecesArray[userMove[0]][userMove[1]].playerType == black) { 
+				//if jump more then 2
+				if (userMove[3] != userMove[1] + 1 && userMove[3] != userMove[1] + 2) {
+					printf("Pawns can't move like that...\n");
+					return 0;
+				}
+				//if jumpt on another piece
+				else if ((b->piecesArray[userMove[2]][userMove[3]].piceType != empty) /* || (b->piecesArray[userMove[2] + 1][userMove[3] + 1].piceType != empty)*/) {
+					printf("Pawns can't move like that...\n");
+					return 0;
+				}
+			}
+
+			//white pawn logic
+			if (b->piecesArray[userMove[0]][userMove[1]].playerType == white) {
+				//if jump more then 2
+				if (userMove[3] != userMove[1] - 1 && userMove[3] != userMove[1] - 2) {
+					printf("Pawns can't move like that...\n");
+					return 0;
+				}
+				//if jumpt on another piece
+				else if ((b->piecesArray[userMove[2]][userMove[3]].piceType != empty) /*|| (b->piecesArray[userMove[2] - 1][userMove[3] - 1].piceType != empty) */ ) {
+					printf("Pawns can't move like that...\n");
+					return 0;
+				}
+			}
+		}
+
+		return 1; //approve the move
 }
 
 char* movePiece(board* b)
@@ -269,13 +312,10 @@ char* movePiece(board* b)
 	int* userFinalMove = { NULL };
 	while ((userFinalMove = userMoveResolver(locationToLocation,b)) == NULL) {
 		//if illegal move
-		printf("Bad name!\ntry again: ");
+		printf("\ntry again: ");
 		if (scanf("%s", locationToLocation) == NULL)
 			return NULL;
 	}
-
-	//need to add: cheak that the move was leagal(all the ruls of chess)+ not longer then 3+ on the board
-
 
 	//enter piece to new location and update turn
 	b->piecesArray[userFinalMove[2]][userFinalMove[3]].piceType = b->piecesArray[userFinalMove[0]][userFinalMove[1]].piceType; //update location
