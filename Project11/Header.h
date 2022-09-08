@@ -10,20 +10,20 @@
 #include <ctype.h>
 
 
-//globals
+//Globals
 char lineAlphabet[BOARD_SIZE] = { 'A','B','C','D','E','F','G','H',' ' };
 char lineNumbers[BOARD_SIZE] = { '8','7','6','5','4','3','2','1' };
 int zeroIfPawnFirstMoveArray_White[BOARD_SIZE - 1] = { 0 }; //takes track on the first moves of pawns
 int zeroIfPawnFirstMoveArray_Black[BOARD_SIZE - 1] = { 0 }; //takes track on the first moves of pawns
 
 
-/*define ENUM type */
+/*ENUM*/
 enum PieceType { empty, pawn = 1, bishop, knight, rook = 5, queen = 9, king };
 enum playerType { black, white, nor };
 enum boardCoordinates { A, B, C, D, E, F, G, H };
 
 
-/*structs*/
+/*Structs*/
 typedef struct
 {
 	int piceType; //king etc.
@@ -39,7 +39,7 @@ typedef struct
 }board;
 
 
-/*functions*/
+/*Functions*/
 //error message
 void error(char* errorMessage) {
 	if (errorMessage == NULL)
@@ -49,7 +49,7 @@ void error(char* errorMessage) {
 };
 
 
-//color logic (windows)
+//Color logic (windows)
 void blackOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 240); }; //black on white
 void blackOnLightGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 112); }; //black on black
 void grayOnWhite() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 248); }; //white on white
@@ -57,7 +57,7 @@ void grayOnLightGray() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE)
 void colorChangeWhiteBlue() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 23); }; //white on blue
 void colorChangeDefault() { SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); }; //default
 
-//main game functions
+/*Main game functions*/
 void BuildChessBoard(board* b)
 {
 	//vars 
@@ -121,7 +121,7 @@ void BuildChessBoard(board* b)
 	}
 }
 
-//this function takes care of color printing correctly
+//This function takes care of color printing correctly
 void colorResolver(board* b, int x, int y)
 {
 	if (b->piecesArray[x][y].playerType == black && b->boardBace[x][y] == white)
@@ -258,7 +258,7 @@ int moveTester(int* userMove, board* b)
 		printf("You can only move your own pieces...\n");
 		return 0;
 	}
-		//pawn move logic
+		/*Pawn move logic*/
 		if (b->piecesArray[userMove[0]][userMove[1]].piceType == pawn)
 		{
 			//en passant not included yet!
@@ -268,25 +268,27 @@ int moveTester(int* userMove, board* b)
 				return 0;
 			}
 
+			//if target location not empty
+			if (b->piecesArray[userMove[2]][userMove[3]].piceType != empty)
+			{
+				//skip if cross eating missing
+				printf("The next place is not empty!");
+				return 0;
+			}
+
 			//black pawn logic
 			else if (b->piecesArray[userMove[0]][userMove[1]].playerType == black)
 			{ 
-				
-				//if jump nor by 1 or 2
-				 if (userMove[3] != userMove[1] + 1 && userMove[3] != userMove[1] + 2)
+				//if skips 2 and there's one on the way
+				if ( (b->piecesArray[userMove[2]][userMove[3] - 1].piceType != empty) && ((userMove[1] - userMove[3] == 2)) )
 				{
-					printf("Pawns can't move like that...\n");
+					//skip if cross eating missing
+					printf("You can't skip 2, there's a piece in there!");
 					return 0;
 				}
-				//if jumpt on another piece
-				else if (b->piecesArray[userMove[2]][userMove[3]].piceType != empty)
-				{
-					printf("That square is taken(1)...\n");
-					return 0;
-				}
-				else if (b->piecesArray[userMove[2]][userMove[3] - 1].piceType != empty)
-				{
-					printf("That square is taken(2)...\n");
+				//make sure it's not more then 2
+				if (userMove[1] - userMove[3] > 2) {
+					printf("Illegal move!");
 					return 0;
 				}
 			}
@@ -294,21 +296,15 @@ int moveTester(int* userMove, board* b)
 			//white pawn logic
 			if (b->piecesArray[userMove[0]][userMove[1]].playerType == white)
 			{
-				//if jump more then 2
-				if (userMove[3] != userMove[1] - 1 && userMove[3] != userMove[1] - 2)
-				{
-					printf("Pawns can't move like that...\n");
+				//if skips 2 and there's one on the way
+				if ((b->piecesArray[userMove[2]][userMove[3] + 1].piceType != empty) && (userMove[1] - userMove[3] == 2) ) {
+					//skip if cross eating missing
+					printf("You can't skip 2, there's a piece in there!");
 					return 0;
 				}
-				//if jumpt on another piece
-				else if (b->piecesArray[userMove[2]][userMove[3]].piceType != empty)
-				{
-					printf("Pawns can't move like that...\n");
-					return 0;
-				}
-				else if (b->piecesArray[userMove[2]][userMove[3]-1].piceType != empty)
-				{
-					printf("Pawns can't move like that...\n");
+				//make sure it's not more then 2
+				if (userMove[3] - userMove[1] < -2) { 
+					printf("Illegal move!");
 					return 0;
 				}
 			}
@@ -327,9 +323,9 @@ char* movePiece(board* b)
 
 	//player turn message
 	if (b->playerTurn)
-		printf("Whites turn: ");
+		printf("Whites move: ");
 	else
-		printf("Blacks turn: ");
+		printf("Blacks move: ");
 
 	//get the piece to move
 	if (scanf("%s", locationToLocation) == NULL)
