@@ -252,88 +252,100 @@ int* userMoveResolver(char* string, board* b)
 
 int moveTester(int* userMove, board* b)
 {
+
+	/*Pawn move logic*/
+	if (b->piecesArray[userMove[0]][userMove[1]].piceType == pawn)
+	{
+		//black pawn logic
+		if (b->piecesArray[userMove[0]][userMove[1]].playerType == black)
+		{
+			//eating
+			if ((userMove[2] - userMove[0] == 1 || userMove[2] - userMove[0] == -1) && (userMove[1] + 1 == userMove[3]) && (b->piecesArray[userMove[2]][userMove[3]].playerType == white))
+			{
+				return 1;
+			}
+
+			//if not first move and trying to jump 2
+			if ((zeroIfPawnFirstMoveArray_Black[userMove[0]] != 0) && (userMove[3] - userMove[1] == 2))
+			{
+				printf("Not first move, can't jump 2!");
+				return 0;
+			}
+
+			//if skips 2 and there's one on the way
+			if ((b->piecesArray[userMove[2]][userMove[3] - 1].piceType != empty) && ((userMove[3] - userMove[1] == 2)))
+			{
+				//skip if cross eating missing
+				printf("You can't skip 2, there's a piece in there!");
+				return 0;
+			}
+			//make sure it's not more then 2
+			if (userMove[1] - userMove[3] > 2) {
+				printf("Illegal move!");
+				return 0;
+			}
+			//update array that it can't move 2 any more (moved once)
+			zeroIfPawnFirstMoveArray_Black[userMove[0]] = 1;
+		}
+
+		//white pawn logic
+		if (b->piecesArray[userMove[0]][userMove[1]].playerType == white)
+		{
+
+			//eating
+			if ((userMove[2] - userMove[0] == 1 || userMove[2] - userMove[0] == -1) && (userMove[1] - 1 == userMove[3]) && (b->piecesArray[userMove[2]][userMove[3]].playerType == black))
+			{
+				return 1;
+			}
+
+			//if not first move and trying to jump 2
+			if ((zeroIfPawnFirstMoveArray_White[userMove[0]] != 0) && (userMove[1] - userMove[3] == 2))
+			{
+				printf("Not first move, can't jump 2!");
+				return 0;
+			}
+
+			//if skips 2 and there's one on the way
+			if ((b->piecesArray[userMove[2]][userMove[3] + 1].piceType != empty) && (userMove[1] - userMove[3] == 2)) {
+				//skip if cross eating missing
+				printf("You can't skip 2!");
+				return 0;
+			}
+
+			//make sure it's not more then 2
+			if (userMove[3] - userMove[1] < -2) {
+				printf("Illegal move!");
+				return 0;
+			}
+			//update array that it can't move 2 any more (moved once)
+			zeroIfPawnFirstMoveArray_White[userMove[0]] = 1;
+		}
+
+		//en passant not included yet!
+		if (userMove[0] != userMove[2])
+		{
+			printf("Pawns can't move like that...\n");
+			return 0;
+		}
+	}
+
+
 	//if the piece beloges to him- then allow
 	if (b->playerTurn != b->piecesArray[userMove[0]][userMove[1]].playerType)
 	{
 		printf("Illegal move!\n");
 		return 0;
 	}
-		/*Pawn move logic*/
-		if (b->piecesArray[userMove[0]][userMove[1]].piceType == pawn)
-		{
-			//en passant not included yet!
-			if (userMove[0] != userMove[2]) 
-			{	
-				printf("Pawns can't move like that...\n");
-				return 0;
-			}
+	//if target location not empty
+	if (b->piecesArray[userMove[2]][userMove[3]].piceType != empty)
+	{
+		//skip if cross eating missing
+		printf("The next place is not empty!");
+		return 0;
+	}
+	/*missing en passant special case*/
 
-			//if target location not empty
-			if (b->piecesArray[userMove[2]][userMove[3]].piceType != empty)
-			{
-				//skip if cross eating missing
-				printf("The next place is not empty!");
-				return 0;
-			}
-
-			//black pawn logic
-			else if (b->piecesArray[userMove[0]][userMove[1]].playerType == black)
-			{ 
-				//if not first move and trying to jump 2
-				if ((zeroIfPawnFirstMoveArray_Black[userMove[0]] != 0) && (userMove[3] - userMove[1] == 2))
-				{
-					printf("Not first move, can't jump 2!");
-					return 0;
-				}
-
-				//if skips 2 and there's one on the way
-				if ( (b->piecesArray[userMove[2]][userMove[3] - 1].piceType != empty) && ((userMove[3] - userMove[1] == 2)) )
-				{
-					//skip if cross eating missing
-					printf("You can't skip 2, there's a piece in there!");
-					return 0;
-				}
-				//make sure it's not more then 2
-				if (userMove[1] - userMove[3] > 2) {
-					printf("Illegal move!");
-					return 0;
-				}
-				//update array that it can't move 2 any more (moved once)
-				zeroIfPawnFirstMoveArray_Black[userMove[0]] = 1;
-			}
-
-			//white pawn logic
-			if (b->piecesArray[userMove[0]][userMove[1]].playerType == white)
-			{
-				
-				//if nto first move and trying to jump 2
-				if ((zeroIfPawnFirstMoveArray_White[userMove[0]] != 0) && (userMove[1] - userMove[3] == 2))
-					{
-					printf("Not first move, can't jump 2!");
-					return 0;
-					}
-
-				//if skips 2 and there's one on the way
-				if ((b->piecesArray[userMove[2]][userMove[3] + 1].piceType != empty) && (userMove[1] - userMove[3] == 2) ) {
-					//skip if cross eating missing
-					printf("You can't skip 2!");
-					return 0;
-					}
-				
-				//make sure it's not more then 2
-				if (userMove[3] - userMove[1] < -2) { 
-					printf("Illegal move!");
-					return 0;
-				}
-				//update array that it can't move 2 any more (moved once)
-				zeroIfPawnFirstMoveArray_White[userMove[0]] = 1;
-			}
-		}
-		//update pawn first move
-		
-		/*missing en passant special case*/
-
-		return 1; //approve the move
+	return 1; //approve the move
 }
 
 char* movePiece(board* b)
@@ -352,7 +364,7 @@ char* movePiece(board* b)
 		return NULL;
 	//cut and make sure it's fine
 	int* userFinalMove = { NULL };
-	while ((userFinalMove = userMoveResolver(locationToLocation,b)) == NULL) {
+	while ((userFinalMove = userMoveResolver(locationToLocation, b)) == NULL) {
 		//if illegal move
 		printf("\ntry again: ");
 		if (scanf("%s", locationToLocation) == NULL)
